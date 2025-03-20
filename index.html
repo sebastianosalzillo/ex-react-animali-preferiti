@@ -1,4 +1,3 @@
-<!-- index.html -->
 <!DOCTYPE html>
 <html lang="en">
 
@@ -6,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>I miei animali Preferiti</title>
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="style.css"> <!-- Collegamento al file CSS -->
 </head>
 
 <body>
@@ -23,41 +22,88 @@
         <p>Creato con amore da... un collega sbadato! 🐾</p>
     </footer>
 
-
-
     <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
     <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
+
     <script type="text/babel">
+        const { useState } = React;
 
+        function Modal({ title, content, show, onClose, onConfirm }) {
+            if (!show) return null;
 
-        ///Il componente deve includere:
-        //Un elemento <details> con titolo "Animali", che contiene:
-        ///Una lista <ul> statica che viene creata a partire da un array di stringhe (animals) dove ciascuna stringa rappresenta il nome di un animale.
-
-        function ListaAnimali() {
-            const animals = ["cane", "gatto"]
-
-            return (
-
-                <details>
-                    <summary>animali</summary>
-                    <ul>
-{animals.map(cur => <li>{cur}</li>)}
-                    </ul>
-                </details>
-
-            )
+            return ReactDOM.createPortal(
+                <div className="modal-container" onClick={onClose}>
+                    <div className="modal" onClick={(e) => e.stopPropagation()}>
+                        <h2>{title}</h2>
+                        {content}
+                        <div className="modal-buttons">
+                            <button onClick={onClose}>Annulla</button>
+                            <button onClick={onConfirm}>Conferma</button>
+                        </div>
+                    </div>
+                </div>,
+                document.body
+            );
         }
 
-        // Monta un componente React all’interno dell’elemento con classe .lista-animali.
+        function ListaAnimali() {
+            const [animals, setAnimals] = useState([]);
+            const [show, setShow] = useState(false);
+            const [inputValue, setInputValue] = useState("");
 
-        const container = document.querySelector(".lista-animali")
-        ReactDOM.createRoot(container).render(<ListaAnimali />)
+            function apriModale() {
+                setShow(true);
+            }
 
+            function chiudiModale() {
+                setShow(false);
+            }
+
+            function confermaAnimale() {
+                if (inputValue.trim() !== "") {
+                    setAnimals(prevAnimals => [...prevAnimals, inputValue.trim()]);
+                    setInputValue(""); // Reset input dopo l'inserimento
+                }
+                setShow(false);
+            }
+
+            return (
+                <div>
+                    <button onClick={apriModale}>Aggiungi Animale</button>
+                    <details>
+                        <summary>Animali</summary>
+                        <ul>
+                            {animals.map((cur, index) => <li key={index}>{cur}</li>)}
+                        </ul>
+                    </details>
+
+                    {/* Modale con input di testo passato come content */}
+                    <Modal 
+                        title="Aggiungi un Animale" 
+                        show={show} 
+                        onClose={chiudiModale} 
+                        onConfirm={confermaAnimale}
+                        content={
+                            <input 
+                                type="text" 
+                                value={inputValue} 
+                                onChange={(e) => setInputValue(e.target.value)}
+                                placeholder="Inserisci un animale"
+                            />
+                        }
+                    />
+                </div>
+            );
+        }
+
+        const container = document.querySelector(".lista-animali");
+        if (container) {
+            ReactDOM.createRoot(container).render(<ListaAnimali />);
+        } else {
+            console.error("Elemento .lista-animali non trovato!");
+        }
     </script>
-
-
 
 </body>
 
