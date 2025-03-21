@@ -63,7 +63,7 @@
             function confermaAnimale() {
                 if (inputValue.trim() !== "") {
                     setAnimals(prevAnimals => [...prevAnimals, inputValue.trim()]);
-                    setInputValue(""); // Reset input dopo l'inserimento
+                    setInputValue(""); 
                 }
                 setShow(false);
             }
@@ -78,7 +78,7 @@
                         </ul>
                     </details>
 
-                    {/* Modale con input di testo passato come content */}
+                    
                     <Modal 
                         title="Aggiungi un Animale" 
                         show={show} 
